@@ -4,7 +4,7 @@ import smtplib
 import requests
 from bs4 import BeautifulSoup
 
-from settings import email_password, email_port, email_server, email_user
+from settings import from_server, from_port, from_user, from_password, to_email
 
 
 def import_price_list():
@@ -46,13 +46,13 @@ def send_email(title, price, URL):
     message = "Subject: {}\n\n{}".format(subject, body)
 
     try:
-        server = smtplib.SMTP(email_server, email_port)
-        server.connect(email_server, email_port)
+        server = smtplib.SMTP(from_server, from_port)
+        server.connect(from_server, from_port)
         server.ehlo()
         server.starttls()
         server.ehlo()
-        server.login(email_user, email_password)
-        server.sendmail(email_user, "msg.jay@yahoo.com", message)
+        server.login(from_user, from_password)
+        server.sendmail(from_user, to_email, message)
         server.quit()
         print("Email sent successfully")
     except:
