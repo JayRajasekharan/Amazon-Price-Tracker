@@ -1,14 +1,19 @@
+import json
 import re
 import smtplib
+from email.mime.text import MIMEText
 
 import requests
 from bs4 import BeautifulSoup
 
-from settings import from_server, from_port, from_user, from_password, to_email
+from settings import from_password, from_port, from_server, from_user, to_email
 
 
 def import_price_list():
-    return None
+    with open("item_list.json", "r") as f:
+        item_list = json.load(f)
+
+    return item_list
 
 
 def check_price():
@@ -25,14 +30,11 @@ def check_price():
     soup = BeautifulSoup(page.content, "html.parser")
     soup = BeautifulSoup(soup.prettify(), "html.parser")
 
-    title = soup.find(id="productTitle").get_text()
+    title = soup.find(id="productTitle").get_text().strip()
     price = soup.find(id="priceblock_ourprice").get_text()
 
     # Price can contain currency symbols and "CAD"
     price = float(re.findall(r"\d+.\d+", price)[0])
-
-    print(title.strip())
-    print(price)
 
     # If Prices less that target price, send email
     if price < 10.00:
@@ -40,19 +42,21 @@ def check_price():
 
 
 def send_email(title, price, URL):
-    subject = f"Price of {title} dropped!"
-    body = f"Price dropped to {price}.\nCheck amazon link {URL}"
 
-    message = "Subject: {}\n\n{}".format(subject, body)
+    message = MIMEText(f"Price dropped to {price}. \nCheck amazon link: {URL}")
+    message["Subject"] = f"Price dropped: {title}!"
+    message["From"] = from_user
+    message["To"] = to_email
+
+    # print(message.as_string())
 
     try:
         server = smtplib.SMTP(from_server, from_port)
         server.connect(from_server, from_port)
-        server.ehlo()
         server.starttls()
         server.ehlo()
         server.login(from_user, from_password)
-        server.sendmail(from_user, to_email, message)
+        server.sendmail(from_user, to_email, message.as_string())
         server.quit()
         print("Email sent successfully")
     except:
@@ -61,3 +65,7 @@ def send_email(title, price, URL):
 
 if __name__ == "__main__":
     check_price()
+    # item_list = import_price_list()
+    # print(item_list)
+    # print(type(item_list))
+    # print(item_list.keys())

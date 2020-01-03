@@ -1,0 +1,14 @@
+[
+    {
+        "item_name": "Moneysworth Shoe Cream",
+        "item_url": "https://www.amazon.ca/Moneysworth-Best-Shoe-Cream-Black/dp/B00BVZ5ZR6?th=1",
+        "target_price": 10,
+        "last_price": 9.43
+    },
+    {
+        "item_name": "Fisher Space Pen Black Fine Point Refill",
+        "item_url": "https://www.amazon.ca/dp/B000Z7WVZK/",
+        "target_price": 10,
+        "last_price": 8
+    }
+]
